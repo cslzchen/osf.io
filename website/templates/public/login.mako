@@ -105,7 +105,7 @@
     </div>
         %else:
             <div id="logInForm"></div>
-            <div id="signUpScope"></div>
+            <div id="signu"></div>
         %endif
 
         %if sign_up:
@@ -222,10 +222,10 @@
             %if sign_up:
                     </br>
             <div class="form-group">
-                <div class="col-sm-4">
-                    <a href="#" >Already have an account?</a>
+                <div class="col-sm-6">
+                    <a class="m-l-md" href="#" >Already have an account?</a>
                 </div>
-                <div class="col-sm-8">
+                <div class="col-sm-6">
                     <button type="submit" class="btn pull-right btn-success" data-bind="disable: submitted()">Create account</button>
                 </div>
             </div>

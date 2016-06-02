@@ -109,7 +109,7 @@
         %endif
 
         %if sign_up:
-            <div class="col-sm-6 col-sm-offset-3 existing-user-signin p-b-md m-b-m">
+            <div id="signUpScope" class="col-sm-6 col-sm-offset-3 existing-user-signin p-b-md m-b-m">
         %else:
             <div id="signUpScope" class="col-sm-5 toggle-box toggle-box-right toggle-box-muted p-h-lg" style="height: auto;">
         %endif
@@ -217,13 +217,13 @@
             </div>
             <!-- Flashed Messages -->
             <div class="help-block" >
-                <p data-bind="html: flashMessage, attr: {class: flashMessageClass}"></p>
+                <p class="m-l-md" data-bind="html: flashMessage, attr: {class: flashMessageClass}"></p>
             </div>
             %if sign_up:
                     </br>
             <div class="form-group">
                 <div class="col-sm-6">
-                    <a class="m-l-md" href="#" >Already have an account?</a>
+                    <a class="m-l-md" href="${login_url}" >Already have an account?</a>
                 </div>
                 <div class="col-sm-6">
                     <button type="submit" class="btn pull-right btn-success" data-bind="disable: submitted()">Create account</button>

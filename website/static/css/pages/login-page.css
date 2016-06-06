@@ -1,7 +1,3 @@
-#signInContainer {
-    height: 600px;
-}
-
 .toggle-box {
     height: 320px;
     border: 1px solid #EEE;
@@ -41,13 +37,4 @@
 .toggle-box-muted .btn-success {
     background-color: #CCC;
     border-color: #BBB;
-}
-.existing-user-signin {
-    background: #f7f7f7;
-    border-radius: 4px;
-}
-
-#termsAndConditions {
-    margin-top: 25px;
-    margin-bottom: 100px;
 }

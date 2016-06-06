@@ -52,8 +52,11 @@
     </div>
     %endif
     %if campaign != "institution" or not enable_institutions:
-        %if not sign_up:
+        %if sign_up:
+            <div class="col-sm-5 col-sm-offset-1 toggle-box toggle-box-left toggle-box-muted p-h-lg">
+        %else:
             <div class="col-sm-5 col-sm-offset-1 toggle-box toggle-box-left toggle-box-active p-h-lg">
+        %endif
         <form
             id="logInForm"
             class="form-horizontal"
@@ -103,13 +106,8 @@
             </div>
         </form>
     </div>
-        %else:
-            <div id="logInForm"></div>
-            <div id="signu"></div>
-        %endif
-
         %if sign_up:
-            <div id="signUpScope" class="col-sm-6 col-sm-offset-3 existing-user-signin p-b-md m-b-m">
+            <div id="signUpScope" class="col-sm-5 toggle-box toggle-box-right toggle-box-active p-h-lg" style="height: auto;">
         %else:
             <div id="signUpScope" class="col-sm-5 toggle-box toggle-box-right toggle-box-muted p-h-lg" style="height: auto;">
         %endif
@@ -217,27 +215,8 @@
             </div>
             <!-- Flashed Messages -->
             <div class="help-block" >
-                <p class="m-l-md" data-bind="html: flashMessage, attr: {class: flashMessageClass}"></p>
+                <p data-bind="html: flashMessage, attr: {class: flashMessageClass}"></p>
             </div>
-            %if sign_up:
-                    </br>
-            <div class="form-group">
-                <div class="col-sm-6">
-                    <a class="m-l-md" href="${login_url}" >Already have an account?</a>
-                </div>
-                <div class="col-sm-6">
-                    <button type="submit" class="btn pull-right btn-success" data-bind="disable: submitted()">Create account</button>
-                </div>
-            </div>
-
-        </form>
-    </div>
-
-    <div id="termsAndConditions" class="col-sm-6 col-sm-offset-3">
-        <p> By clicking "Create account", you agree to our <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/TERMS_OF_USE.md">Terms</a> and that you have read our <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md">Privacy Policy</a>, including our information on <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md#f-cookies">Cookie Use</a>.</p>
-    </div>
-    </div>
-            %else:
             <div>
                 <p> By clicking "Create account", you agree to our <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/TERMS_OF_USE.md">Terms</a> and that you have read our <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md">Privacy Policy</a>, including our information on <a href="https://github.com/CenterForOpenScience/centerforopenscience.org/blob/master/PRIVACY_POLICY.md#f-cookies">Cookie Use</a>.</p>
             </div>
@@ -255,7 +234,7 @@
         %endif
     %endif
 </div>
-%endif
+
 </%def>
 
 <%def name="javascript_bottom()">

@@ -99,6 +99,7 @@
                             value: email1,
                             disable: submitted(),
                             event: {
+                                blur: trim.bind($data, email1)
                             }"
                         >
                         <p class="help-block" data-bind="validationMessage: email1" style="display: none;"></p>

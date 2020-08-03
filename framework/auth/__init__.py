@@ -38,6 +38,11 @@ def authenticate(user, access_token, response):
     user.update_affiliated_institutions_by_email_domain()
     user.save()
     response = create_session(response, data=data)
+    print('#### >>>>')
+    print('#### >>>> authenticate: create session and return the response with \'Set-Cookie\'')
+    print('#### >>>> cas authentication finishes')
+    print('#### >>>>')
+    print('#### >>>> <<<< &&&&')
     return response
 
 

@@ -125,6 +125,13 @@ def before_request():
         service_url = furl.furl(request.url)
         service_url.args.pop('ticket')
         # Attempt to authenticate wih CAS, and return a proper redirect response
+        print('#### >>>>')
+        print('#### >>>> cas authentication starts')
+        print('#### >>>> sessions pre-request: check service ticket')
+        print('#### >>>> sessions pre-request: ticket = {}'.format(ticket))
+        print('#### >>>> sessions pre-request: service_url = {}'.format(service_url.url))
+        print('#### >>>>')
+        print('#### >>>> <<<< &&&&')
         return cas.make_response_from_ticket(ticket=ticket, service_url=service_url.url)
 
     if request.authorization:

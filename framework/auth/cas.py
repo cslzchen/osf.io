@@ -114,8 +114,20 @@ class CasClient(object):
         url.args['ticket'] = ticket
         url.args['service'] = service_url
 
+        print('#### >>>>')
+        print('#### >>>> cas client: validate service ticket with cas server')
+        print('#### >>>> cas client: ticket = {}'.format(ticket))
+        print('#### >>>> cas client: service_url = {}'.format(service_url))
+        print('#### >>>> cas client: validation url = {}'.format(url.url))
+        print('#### >>>>')
         resp = requests.get(url.url)
+        print('#### >>>> cas client: resp code = {}'.format(resp.status_code))
         if resp.status_code == 200:
+            print('#### >>>> cas client: resp body =')
+            print('#### >>>>\n')
+            print(resp.content.decode())
+            print('#### >>>>')
+            print('#### >>>> <<<< &&&&')
             return self._parse_service_validation(resp.content)
         else:
             self._handle_error(resp)
@@ -163,6 +175,19 @@ class CasClient(object):
             resp.attributes['accessTokenScope'] = set(scopes.split(' ') if scopes else [])
         else:
             resp.authenticated = False
+        print('#### >>>>')
+        print('#### >>>> cas client: parse service validation response')
+        print('#### >>>> cas client: resp parsed = {}'.format(resp))
+        print('#### >>>>\n')
+        print('\tauthenticated = {}'.format(resp.authenticated))
+        print('\tuser = {}'.format(resp.user))
+        print('\tstatus = {}'.format(resp.status))
+        print('\tattributes = {')
+        for key, val in resp.attributes.items():
+            print('\t\t\'{}\': \'{}\','.format(key, val))
+        print('\t}')
+        print('\n#### >>>>')
+        print('#### >>>> <<<< &&&&')
         return resp
 
     def _parse_profile(self, raw, access_token):
@@ -323,6 +348,13 @@ def get_user_from_cas_resp(cas_resp):
         user = OSFUser.load(cas_resp.user)
         # cas returns a valid OSF user id
         if user:
+            print('#### >>>>')
+            print('#### >>>> cas client: get user info from parsed response')
+            print('#### >>>> cas client: guid = {}'.format(user.guids.first()._id))
+            print('#### >>>> cas client: username = {}'.format(user.username))
+            print('#### >>>> cas client: return = (user, None, \'authenticate\')')
+            print('#### >>>>')
+            print('#### >>>> <<<< &&&&')
             return user, None, 'authenticate'
         # cas does not return a valid OSF user id
         else:

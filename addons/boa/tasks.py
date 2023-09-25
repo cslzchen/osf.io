@@ -1,7 +1,7 @@
 import logging
 import time
 
-from addons.boa import utils
+from . import settings
 
 from boaapi.boa_client import BoaClient, BOA_API_ENDPOINT
 from boaapi.status import CompilerStatus, ExecutionStatus
@@ -9,13 +9,18 @@ from boaapi.status import CompilerStatus, ExecutionStatus
 logger = logging.getLogger(__name__)
 
 
-def submit_to_boa():
+# Currently using pre-defined user credentials and fixtures from addon's local.py.
+def submit_to_boa(user_settings=None, api_query=None, target_data_set=None):
+
+    user_settings = settings.user_settings
+    api_query = settings.test_query
+    target_data_set = settings.test_data_set
 
     client = BoaClient(endpoint=BOA_API_ENDPOINT)
-    client.login(utils.test_username, utils.test_password)
+    client.login(user_settings['username'], user_settings['password'])
     logger.info('Login successful')
-    data_set = client.get_dataset(utils.test_data_set)
-    job = client.query(utils.test_query, data_set)
+    data_set = client.get_dataset(target_data_set)
+    job = client.query(api_query, data_set)
     logger.info('Query submitted')
 
     while job.is_running():

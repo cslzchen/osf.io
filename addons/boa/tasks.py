@@ -4,7 +4,6 @@ import time
 
 from addons.boa import settings as boa_settings
 from addons.osfstorage.models import OsfStorageFile
-from api.files.serializers import get_file_download_link
 from osf.models import OSFUser
 from osf.utils.fields import ensure_str
 from website import settings as osf_settings
@@ -24,15 +23,13 @@ def submit_to_boa(file_guid, user_guid, target_data_set=None):
     # target_data_set = target_data_set
     logger.info(f'Downloading boa query file {file_guid}...')
     boa_file = OsfStorageFile.objects.get(guids___id=file_guid)
-    file_download_link = get_file_download_link(boa_file)
-    logger.info(f'File download link (domain): {file_download_link}')
-    internal_link = file_download_link.replace(osf_settings.DOMAIN, osf_settings.INTERNAL_DOMAIN)
-    logger.info(f'File download link (internal domain: {internal_link}')
-    submit_request = request.Request(internal_link)
+    file_download_wb_url = boa_file.generate_waterbutler_url()
+    logger.info(f'File download link (domain): {file_download_wb_url}')
+    file_download_wb_internal_url = file_download_wb_url.replace(osf_settings.WATERBUTLER_URL, osf_settings.WATERBUTLER_INTERNAL_URL)
+    logger.info(f'File download link (internal domain: {file_download_wb_internal_url}')
+    submit_request = request.Request(file_download_wb_internal_url)
     submit_request.add_header('Cookie', f'{osf_settings.COOKIE_NAME}={cookie_value}')
-    response = request.urlopen(submit_request)
-    content = response.read()
-    boa_query = ensure_str(content)
+    boa_query = ensure_str(request.urlopen(submit_request).read())
     logger.info(f'boa query downloaded:\n{boa_query}')
 
     # TODO: get user settings from DB

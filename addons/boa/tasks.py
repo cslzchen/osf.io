@@ -4,8 +4,9 @@ import time
 
 from addons.boa import settings as boa_settings
 from addons.osfstorage.models import OsfStorageFile
+from api.base.utils import waterbutler_api_url_for
 from osf.models import OSFUser
-from osf.utils.fields import ensure_str
+from osf.utils.fields import ensure_str, ensure_bytes
 from website import settings as osf_settings
 
 from boaapi.boa_client import BoaClient, BoaException, BOA_API_ENDPOINT
@@ -58,11 +59,33 @@ def submit_to_boa(file_guid, user_guid, target_data_set=None):
         logger.warning(f'Job {str(job.id)} still running, waiting 10s...')
         time.sleep(10)
     if job.compiler_status is CompilerStatus.ERROR:
-        logger.error(f'Job {str(job.id)} failed with compile error')
+        job_output = f'Job {str(job.id)} failed with compile error'
+        logger.error(job_output)
     elif job.compiler_status is ExecutionStatus.ERROR:
-        logger.error(f'Job {str(job.id)} failed with execution error')
+        job_output = f'Job {str(job.id)} failed with execution error'
+        logger.error(job_output)
     else:
-        logger.info(f'Job {str(job.id)}:\n{job.output()}')
+        job_output = job.output()
+        logger.info(f'Job {str(job.id)}:\n{job_output}')
 
+    try:
+        parent_folder = boa_file.parent
+        output_file_name = boa_file.name.replace('.boa', '_results.txt')
+        base_url = None
+        if hasattr(parent_folder.target, 'osfstorage_region'):
+            base_url = parent_folder.target.osfstorage_region.waterbutler_url
+        file_upload_wb_url = waterbutler_api_url_for(parent_folder.target._id, parent_folder.provider, parent_folder.path, base_url=base_url)
+        file_upload_wb_url = file_upload_wb_url.replace(osf_settings.WATERBUTLER_URL, osf_settings.WATERBUTLER_INTERNAL_URL)
+        submit_request = request.Request(f'{file_upload_wb_url}?kind=file&name={output_file_name}')
+        submit_request.method = 'PUT'
+        submit_request.data = ensure_bytes(job_output)
+        submit_request.add_header('Cookie', f'{osf_settings.COOKIE_NAME}={cookie_value}')
+        request.urlopen(submit_request)
+    except Exception:
+        logger.error('Upload error!')
+        client.close()
+        return
+
+    logger.info('Job done!')
     client.close()
     return

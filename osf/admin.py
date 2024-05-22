@@ -1,5 +1,5 @@
 from django.contrib import admin, messages
-from django.conf.urls import url
+from django.urls import re_path
 from django.template.response import TemplateResponse
 from django_extensions.admin import ForeignKeyAutocompleteAdmin
 from django.contrib.auth.models import Group
@@ -15,8 +15,10 @@ from osf.models.notable_domain import DomainReference
 def list_displayable_fields(cls):
     return [x.name for x in cls._meta.fields if x.editable and not x.is_relation and not x.primary_key]
 
+
 class NodeAdmin(ForeignKeyAutocompleteAdmin):
     fields = list_displayable_fields(Node)
+
 
 class OSFUserAdmin(admin.ModelAdmin):
     fields = ['groups', 'user_permissions'] + list_displayable_fields(OSFUser)
@@ -26,7 +28,9 @@ class OSFUserAdmin(admin.ModelAdmin):
         Restricts preprint/node/osfgroup django groups from showing up in the user's groups list in the admin app
         """
         if db_field.name == 'groups':
-            kwargs['queryset'] = Group.objects.exclude(Q(name__startswith='preprint_') | Q(name__startswith='node_') | Q(name__startswith='osfgroup_') | Q(name__startswith='collections_'))
+            kwargs['queryset'] = Group.objects.exclude(
+                Q(name__startswith='preprint_') | Q(name__startswith='node_') | Q(name__startswith='osfgroup_') | Q(
+                    name__startswith='collections_'))
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_related(self, request, form, formsets, change):
@@ -34,7 +38,9 @@ class OSFUserAdmin(admin.ModelAdmin):
         Since m2m fields overridden with new form data in admin app, preprint groups/node/osfgroup groups (which are now excluded from being selections)
         are removed.  Manually re-adds preprint/node groups after adding new groups in form.
         """
-        groups_to_preserve = list(form.instance.groups.filter(Q(name__startswith='preprint_') | Q(name__startswith='node_') | Q(name__startswith='osfgroup_') | Q(name__startswith='collections_')))
+        groups_to_preserve = list(form.instance.groups.filter(
+            Q(name__startswith='preprint_') | Q(name__startswith='node_') | Q(name__startswith='osfgroup_') | Q(
+                name__startswith='collections_')))
         super().save_related(request, form, formsets, change)
         if 'groups' in form.cleaned_data:
             for group in groups_to_preserve:
@@ -88,7 +94,7 @@ class NotableDomainAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         return [
-            url(
+            re_path(
                 r'^bulkadd/$',
                 self.admin_site.admin_view(self.bulk_add_view),
                 name='osf_notabledomain_bulkadd',
@@ -98,7 +104,6 @@ class NotableDomainAdmin(admin.ModelAdmin):
 
     def bulk_add_view(self, request):
         if request.method == 'GET':
-
             context = {
                 **self.admin_site.each_context(request),
                 'note_choices': list(NotableDomain.Note),
@@ -139,6 +144,7 @@ class NotableDomainAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request).annotate(number_of_references=Count('domainreference'))
         return qs
+
 
 admin.site.register(OSFUser, OSFUserAdmin)
 admin.site.register(Node, NodeAdmin)

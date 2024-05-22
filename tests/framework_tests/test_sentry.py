@@ -30,8 +30,9 @@ def set_sentry(status):
 with_sentry = set_sentry(True)
 without_sentry = set_sentry(False)
 
+
 @with_sentry
-@mock.patch('framework.sentry.push_scope')
+@mock.patch('framework.sentry.isolation_scope')
 @mock.patch('framework.sentry.capture_exception')
 def test_log_no_request_context(mock_capture, push_scope_mock):
     sentry.log_exception(sentinel.exception)
@@ -42,7 +43,7 @@ def test_log_no_request_context(mock_capture, push_scope_mock):
 class TestSentry(OsfTestCase):
 
     @with_sentry
-    @mock.patch('framework.sentry.push_scope')
+    @mock.patch('framework.sentry.isolation_scope')
     @mock.patch('framework.sentry.capture_exception')
     def test_log_not_logged_in(self, mock_capture, push_scope_mock):
         sentry.log_exception(sentinel.exception)
@@ -50,7 +51,7 @@ class TestSentry(OsfTestCase):
         mock_capture.assert_called_with(sentinel.exception)
 
     @with_sentry
-    @mock.patch('framework.sentry.push_scope')
+    @mock.patch('framework.sentry.isolation_scope')
     @mock.patch('framework.sentry.capture_exception')
     def test_log_logged_in(self, mock_capture, push_scope_mock):
         user = UserFactory()
@@ -65,7 +66,7 @@ class TestSentry(OsfTestCase):
         mock_capture.assert_called_once_with(sentinel.exception)
 
     @without_sentry
-    @mock.patch('framework.sentry.push_scope')
+    @mock.patch('framework.sentry.isolation_scope')
     @mock.patch('framework.sentry.capture_exception')
     def test_log_not_enabled(self, mock_capture, push_scope_mock):
         sentry.log_exception(sentinel.exception)

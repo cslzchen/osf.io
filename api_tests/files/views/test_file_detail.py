@@ -31,6 +31,7 @@ from website import settings as website_settings
 
 SessionStore = import_module(django_conf_settings.SESSION_ENGINE).SessionStore
 
+
 # stolen from^W^Winspired by DRF
 # rest_framework.fields.DateTimeField.to_representation
 def _dt_to_iso8601(value):
@@ -634,9 +635,9 @@ class TestFileVersionView:
             'service': 'cloud',
             osfstorage_settings.WATERBUTLER_RESOURCE: 'osf',
         }, {
-            'size': 1337,
-            'contentType': 'img/png'
-        }).save()
+                                'size': 1337,
+                                'contentType': 'img/png'
+                            }).save()
         return file
 
     def test_listing(self, app, user, file):
@@ -645,9 +646,9 @@ class TestFileVersionView:
             'service': 'cloud',
             osfstorage_settings.WATERBUTLER_RESOURCE: 'osf',
         }, {
-            'size': 1347,
-            'contentType': 'img/png'
-        }).save()
+                                'size': 1347,
+                                'contentType': 'img/png'
+                            }).save()
 
         res = app.get(
             f'/{API_BASE}files/{file._id}/versions/',
@@ -930,6 +931,7 @@ class TestPreprintFileView:
         # Admin contrib
         res = app.get(file_url, auth=user.auth, expect_errors=True)
         assert res.status_code == 403
+
 
 @pytest.mark.django_db
 class TestShowAsUnviewed:

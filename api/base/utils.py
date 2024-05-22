@@ -228,6 +228,7 @@ def waterbutler_api_url_for(node_id, provider, path='/', _internal=False, base_u
     url.args.update(kwargs)
     return url.url
 
+
 def assert_resource_type(obj, resource_tuple):
     assert type(resource_tuple) is tuple, 'resources must be passed in as a tuple.'
     if len(resource_tuple) == 1:

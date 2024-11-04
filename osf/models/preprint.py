@@ -42,7 +42,7 @@ from website.citations.utils import datetime_to_csl
 from website import settings, mails
 from website.preprints.tasks import update_or_enqueue_on_preprint_updated
 
-from .base import BaseModel, GuidMixin, GuidMixinQuerySet
+from .base import BaseModel, GuidMixinQuerySet, VersionedGuidMixin
 from .identifiers import IdentifierMixin, Identifier
 from .mixins import TaxonomizableMixin, ContributorMixin, SpamOverrideMixin, TitleMixin, DescriptionMixin
 from addons.osfstorage.models import OsfStorageFolder, Region, BaseFileNode, OsfStorageFile
@@ -107,7 +107,7 @@ class PreprintManager(models.Manager):
         return ret.distinct('id', 'created') if include_non_public else ret
 
 
-class Preprint(DirtyFieldsMixin, GuidMixin, IdentifierMixin, ReviewableMixin, BaseModel, TitleMixin, DescriptionMixin,
+class Preprint(DirtyFieldsMixin, VersionedGuidMixin, IdentifierMixin, ReviewableMixin, BaseModel, TitleMixin, DescriptionMixin,
         Loggable, Taggable, ContributorMixin, GuardianMixin, SpamOverrideMixin, TaxonomizableMixin, AffiliatedInstitutionMixin):
 
     objects = PreprintManager()
@@ -268,6 +268,54 @@ class Preprint(DirtyFieldsMixin, GuidMixin, IdentifierMixin, ReviewableMixin, Ba
 
     def __unicode__(self):
         return '{} ({} preprint) (guid={}){}'.format(self.title, 'published' if self.is_published else 'unpublished', self._id, ' with supplemental files on ' + self.node.__unicode__() if self.node else '')
+
+    @classmethod
+    def create(cls, provider, title, creator, description, from_guid=None, version=0):
+
+        from osf.models import Guid
+        from osf.models.base import VersionedGuidMixin
+
+        fork = False
+        if not from_guid:
+            if version:
+                # TODO: should we ignore version or raise exceptions?
+                pass
+            base_guid = Guid.objects.create(is_versioned_base=True)
+            versioned_guid__id = f'{base_guid._id}{VersionedGuidMixin.GUID_VERSION_DELIMITER}{version}'
+            versioned_guid, _ = Guid.objects.get_or_create(_id=versioned_guid__id)
+
+            preprint = cls(
+                provider=provider,
+                title=title,
+                creator=creator,
+                description=description,
+            )
+        else:
+            previous_version = Preprint.load(from_guid)
+            if version != previous_version._id_version + 1:
+                # TODO: should we do automatic version increase without worrying about the version?
+                pass
+            versioned_guid__id = f'{previous_version._id}{VersionedGuidMixin.GUID_VERSION_DELIMITER}{version}'
+            versioned_guid, _ = Guid.objects.get_or_create(_id=versioned_guid__id)
+            preprint = cls(
+                provider=previous_version.provider,
+                title=previous_version.title,
+                creator=previous_version.creator,
+                description=previous_version.description,
+            )
+            fork = True
+
+        preprint.guids.set([versioned_guid])
+        preprint.save()
+        versioned_guid.object_id = preprint.pk
+        versioned_guid.content_type = ContentType.objects.get_for_model(preprint)
+        versioned_guid.save()
+        if fork:
+            # TODO: set the rest of the fields and relationships
+            raise NotImplementedError
+
+        return preprint
+
 
     @property
     def is_deleted(self):
@@ -662,6 +710,9 @@ class Preprint(DirtyFieldsMixin, GuidMixin, IdentifierMixin, ReviewableMixin, Ba
             self._add_creator_as_contributor()
 
         if (not first_save and 'is_published' in saved_fields) or self.is_published:
+            # TODO: when updating share, use the base guid for the final payload key for indexing
+            # Note: however, the share update is quite deep in the chain and the guid has been used many times to load
+            #       the model before finally sending the serialized data; thus it should happen during serialization.
             update_or_enqueue_on_preprint_updated(preprint_id=self._id, saved_fields=saved_fields)
         return ret
 

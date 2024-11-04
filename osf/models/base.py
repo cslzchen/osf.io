@@ -199,6 +199,9 @@ class Guid(BaseModel):
     id = models.AutoField(primary_key=True)
     _id = LowercaseCharField(max_length=255, null=False, blank=False, default=generate_guid, db_index=True,
                              unique=True)
+    is_versioned_base = models.BooleanField(null=False, blank=False, default=False)
+    # TODO: add the latest version number
+    # TODO: add a one to many relationship to self to link all versioned GUIDs
     referent = GenericForeignKey()
     content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(null=True, blank=True)
@@ -441,6 +444,38 @@ class GuidMixin(BaseIDMixin):
 
     class Meta:
         abstract = True
+
+
+class VersionedGuidMixin(GuidMixin):
+
+    class Meta:
+        abstract = True
+
+    GUID_VERSION_DELIMITER = '_v'
+
+    @cached_property
+    def _id(self):
+        try:
+            guid = self.guids.first()
+        except IndexError:
+            return None
+        if guid:
+            return guid._id
+        return None
+
+    @_id.setter
+    def _id(self, value):
+        pass
+
+    @cached_property
+    def _id_base(self):
+        return self._id.split(self.GUID_VERSION_DELIMITER)[0]
+
+    @cached_property
+    def _id_version(self):
+        return self._id.split(self.GUID_VERSION_DELIMITER)[1]
+
+    _primary_key = _id
 
 
 @receiver(post_save)

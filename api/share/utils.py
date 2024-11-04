@@ -98,6 +98,7 @@ def task__update_share(self, guid: str, is_backfill=False):
 
 
 def pls_send_trove_indexcard(osf_item, *, is_backfill=False):
+    # TODO: maybe this is the place where we need to send base guid as identifier (instead of versioned guid)
     try:
         _iri = osf_item.get_semantic_iri()
     except (AttributeError, ValueError):
@@ -406,6 +407,7 @@ def serialize_share_data(resource, old_subjects=None):
 
 
 def serialize_preprint(preprint, old_subjects=None):
+    # TODO: maybe need to swap versioned guid with base guid
     if old_subjects is None:
         old_subjects = []
     from osf.models import Subject

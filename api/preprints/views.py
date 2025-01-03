@@ -119,7 +119,7 @@ class PreprintMixin(NodeMixin):
                 return
             raise NotFound
 
-        if preprint.deleted is not None:
+        if preprint is None or preprint.deleted is not None:
             raise NotFound
 
         # May raise a permission denied

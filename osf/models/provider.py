@@ -390,13 +390,6 @@ class RegistrationProvider(AbstractProvider):
         return False
 
 
-@receiver(post_save, sender=RegistrationProvider)
-def sync_internet_archive_collection(sender, instance, created, **kwargs):
-    if created:
-        from osf.external.internet_archive.tasks import create_ia_provider_subcollection
-        create_ia_provider_subcollection(instance)
-
-
 class PreprintProvider(AbstractProvider):
     """
     Model representing a provider of preprints.

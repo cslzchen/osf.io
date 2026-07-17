@@ -263,7 +263,6 @@ class CrossRefClient(AbstractIdentifierClient):
                     fname=f'{preprint._id}.xml'
                 ),
                 files={'file': (f'{preprint._id}.xml', metadata)},
-                timeout=settings.EXTERNAL_REQUEST_TIMEOUT,
             )
             if response.status_code == 429:
                 raise CrossRefRateLimitError(response.text)
@@ -292,7 +291,6 @@ class CrossRefClient(AbstractIdentifierClient):
                 fname=f'{filename}.xml'
             ),
             files={'file': (f'{filename}.xml', metadata)},
-            timeout=settings.EXTERNAL_REQUEST_TIMEOUT,
         )
 
         logger.info('Sent a bulk update of metadata to CrossRef')

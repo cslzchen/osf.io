@@ -57,7 +57,6 @@ from framework.auth.core import Auth
 
 from tests.base import AdminTestCase
 from osf_tests.factories import (
-    SubjectFactory,
     UserFactory,
     AuthUserFactory,
     ProjectFactory,
@@ -658,7 +657,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
             provider=RegistrationProviderFactory(reviews_workflow='pre-moderation'),
             creator=self.user
         )
-        pre_moderation_draft.subjects.add(SubjectFactory())
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr1)
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr2)
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr3)
@@ -672,7 +670,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
             provider=RegistrationProviderFactory(reviews_workflow='post-moderation'),
             creator=self.user
         )
-        post_moderation_draft.subjects.add(SubjectFactory())
         self._add_contributor(post_moderation_draft, permissions.ADMIN, self.contr1)
         self._add_contributor(post_moderation_draft, permissions.ADMIN, self.contr2)
         self._add_contributor(post_moderation_draft, permissions.ADMIN, self.contr3)
@@ -685,7 +682,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
             registration_schema=get_default_metaschema(),
             creator=self.user
         )
-        self.no_moderation_draft.subjects.add(SubjectFactory())
         self._add_contributor(self.no_moderation_draft, permissions.ADMIN, self.contr1)
         self._add_contributor(self.no_moderation_draft, permissions.ADMIN, self.contr2)
         self._add_contributor(self.no_moderation_draft, permissions.ADMIN, self.contr3)
@@ -885,7 +881,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr1)
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr2)
         self._add_contributor(pre_moderation_draft, permissions.ADMIN, self.contr3)
-        pre_moderation_draft.subjects.add(SubjectFactory())
         pre_moderation_draft.register(auth=self.auth, save=True)
         pre_moderation_registration = pre_moderation_draft.registered_node
 
@@ -906,7 +901,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
             registration_schema=get_default_metaschema(),
             creator=self.user
         )
-        self.no_moderation_draft.subjects.add(SubjectFactory())
         self.no_moderation_draft.register(auth=self.auth, save=True)
         self.registration = self.no_moderation_draft.registered_node
 
@@ -935,7 +929,6 @@ class TestRegistrationRevertToDraft(AdminTestCase):
             registration_schema=get_default_metaschema(),
             creator=self.user
         )
-        self.no_moderation_draft.subjects.add(SubjectFactory())
         self.no_moderation_draft.register(auth=self.auth, save=True)
         self.registration = self.no_moderation_draft.registered_node
 

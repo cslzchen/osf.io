@@ -14,7 +14,7 @@ from transitions import MachineError
 from tests.base import fake, OsfTestCase
 from osf_tests.factories import (
     AuthUserFactory, EmbargoFactory, NodeFactory, ProjectFactory,
-    RegistrationFactory, SubjectFactory, UserFactory, UnconfirmedUserFactory, DraftRegistrationFactory,
+    RegistrationFactory, UserFactory, UnconfirmedUserFactory, DraftRegistrationFactory,
     EmbargoTerminationApprovalFactory
 )
 from tests import utils

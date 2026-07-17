@@ -204,6 +204,8 @@ class CoreScopes:
     READ_COLLECTION_SUBMISSION = 'read_collection_submission'
     WRITE_COLLECTION_SUBMISSION = 'write_collection_submission'
 
+    ADVANCED_SEARCH = 'advanced_search'
+
 
 class ComposedScopes:
     """
@@ -334,6 +336,7 @@ class ComposedScopes:
                     CoreScopes.CEDAR_METADATA_RECORD_READ,
                     CoreScopes.MEETINGS_READ,
                     CoreScopes.INSTITUTION_READ,
+                    CoreScopes.SEARCH,
                     CoreScopes.SCOPES_READ,
                     CoreScopes.USERS_MESSAGE_READ_EMAIL
                 )\
@@ -359,6 +362,7 @@ class ComposedScopes:
                      CoreScopes.WRITE_COLLECTION_SUBMISSION_ACTION,
                      CoreScopes.WRITE_COLLECTION_SUBMISSION,
                      CoreScopes.USERS_MESSAGE_WRITE_EMAIL,
+                     CoreScopes.ADVANCED_SEARCH
                  )
 
     # Admin permissions- includes functionality not intended for third-party use

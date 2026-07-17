@@ -637,7 +637,7 @@ class TestNodeRegistrationCreate(AbstractDraftRegistrationTestCase):
 
     @pytest.fixture()
     def draft_registration(self, user, project_public, schema):
-        draft_registration = DraftRegistrationFactory(
+        return DraftRegistrationFactory(
             initiator=user,
             registration_schema=schema,
             branched_from=project_public,
@@ -646,8 +646,6 @@ class TestNodeRegistrationCreate(AbstractDraftRegistrationTestCase):
                 'item33': {'value': 'success'}
             }
         )
-        draft_registration.subjects.add(SubjectFactory())
-        return draft_registration
 
     @pytest.fixture()
     def url_registrations(self, project_public):
@@ -1398,7 +1396,6 @@ class TestNodeRegistrationCreate(AbstractDraftRegistrationTestCase):
             registration_schema=prereg_schema,
             branched_from=project_public
         )
-        prereg_draft_registration.subjects.add(SubjectFactory())
 
         prereg_registration_responses['q11.uploader'] = []
 
@@ -1601,7 +1598,6 @@ class TestRegistrationCreate(TestNodeRegistrationCreate):
 
         # User is an admin contributor on draft registration but not on node
         draft_registration = DraftRegistrationFactory(creator=user_two, registration_schema=schema)
-        draft_registration.subjects.add(SubjectFactory())
         draft_registration.add_contributor(user, permissions.ADMIN)
         draft_registration.branched_from.add_contributor(user, permissions.WRITE)
         payload_ver['data']['attributes']['draft_registration_id'] = draft_registration._id
@@ -1615,7 +1611,6 @@ class TestRegistrationCreate(TestNodeRegistrationCreate):
 
         # User is admin on draft and node
         draft_registration = DraftRegistrationFactory(creator=user, registration_schema=schema)
-        draft_registration.subjects.add(SubjectFactory())
         assert draft_registration.branched_from.is_admin_contributor(user) is True
         assert draft_registration.has_permission(user, permissions.ADMIN) is True
         payload_ver['data']['attributes']['draft_registration_id'] = draft_registration._id
@@ -1627,7 +1622,6 @@ class TestRegistrationCreate(TestNodeRegistrationCreate):
 
         # User is an admin contributor on node but not on draft registration
         draft_registration = DraftRegistrationFactory(creator=user_two, registration_schema=schema)
-        draft_registration.subjects.add(SubjectFactory())
         draft_registration.add_contributor(user, permissions.WRITE)
         draft_registration.branched_from.add_contributor(user, permissions.ADMIN)
         payload_ver['data']['attributes']['draft_registration_id'] = draft_registration._id
